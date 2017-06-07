@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>Wake Me The Fuck Up</title>
+	<!-- CSS Normalize and Reset -->
+	<link rel="stylesheet" href="./assets/css/normalize.css" />
+	<!-- Bootstrap - Local -->
+	<link rel="stylesheet" href="./assets/css/bootstrap.min.css" />
+	<!-- Font Awesome - Local -->
+	<link rel="stylesheet" href="./assets/css/font-awesome.min.css" />
+	<!-- Custom CSS styles file -->
+	<link rel="stylesheet" href="./assets/css/custom.css" />
+	<script>
+		const { remote } = require('electron') // Make remote available to close the window
+		window.$ = window.jQuery = require('jquery') // jQuery used for DOM
+		const moment = require('moment') // Moment used to time processing
+		const audioFolder = __dirname+'/assets/audio' // Set the name of the directory containing audio files
+		// A list of files in the audio files folder to ignore
+		const audioIgnore = [
+			'.DS_Store'
+		]
+		const fs = require('fs') // Require file system access module
+	</script>
+</head>
+<body>
+	<div id="holderRoutine">
+		<h2>Morning routine</h2>
+		<h3>Get out of bed at 7:30am,<br />leave for work at 9:45am</h3>
+		<br />
+		<ul>
+			<li>Wake up</li>
+			<li>Read all the day’s</li>
+			<ul>
+				<li>E-mails and notifications</li>
+				<li>Events (Calendar)</li>
+				<li>To dos (Bear)</li>
+				<li>Weather (WU)</li>
+				<li>Today page (Bear, edit and print)</li>
+			</ul>
+			<li>Take a walk around the block</li>
+			<li>Drink something (Carnation or orange juice)</li>
+			<li>Take all medicine</li>
+			<li>Take a shower</li>
+			<li>Get dressed</li>
+			<li>Get everything ready for work/the day</li>
+				<ul>
+					<li>Bag</li>
+					<li>Tidy up</li>
+				</ul>
+			<li>Put on makeup</li>
+			<li>Feed Peach &amp; Lenny</li>
+			<li>Go to work/start the day</li>
+		</ul>
+		<br />
+		<div class="btn-group dropup">
+			<button type="button" class="btn btn-info btn-lg btnSnooze" id="5">Snooze</button>
+			<button type="button" class="btn btn-info dropdown-toggle btn-lg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="caret"></span>
+				<span class="sr-only">More snooze options</span>
+			</button>
+			<ul class="dropdown-menu">
+				<li><a class="btnSnooze" id="5">5 minutes</a></li>
+				<li><a class="btnSnooze" id="10">10 minutes</a></li>
+				<li><a class="btnSnooze" id="20">20 minutes</a></li>
+			</ul>
+		</div>
+		<button type="button" id="btnSilence" class="btn btn-default btn-lg"><i class="fa fa-pause"></i></button>
+		<button type="button" id="btnClose" class="btn btn-default btn-lg"><i class="fa fa-times"></i></button>
+	</div>
+	<div id="holderClock">
+		<h1>Good morning, Hannah<br />it is <span id="currentTime"></span></h1>
+	</div>
+	<div id="fullscreen-bg">
+		<video loop muted autoplay poster="assets/img/sunrise_frame.jpg" class="fullscreen-bg__video">
+			<source src="assets/vid/sunrise.mp4" type="video/mp4">
+		</video>
+	</div>
+</body>
+
+<!-- Scripts for the page -->
+<script src="./assets/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+
+// Get all the audio files and put them in an array
+let allAvailableAudio = []
+fs.readdir(audioFolder, (err, files) => {
+	if (err) throw err
+	files.forEach(file => {
+		if(window.$.inArray(file, audioIgnore)){
+			allAvailableAudio.push(file)
+		}
+	});
+})
+
+// Functions to handle playing, stopping, and snoozing audio
+function playAudio(allAvailableAudio){
+	console.log(allAvailableAudio)
+	let option = allAvailableAudio[Math.floor(Math.random() * allAvailableAudio.length)]
+	console.log('Playing '+option)
+}
+function stopAudio(){
+	console.log('Audio stopped')
+}
+function snooze(time){
+	stopAudio()
+	let interval = time*60000
+	setInterval(function(){
+		playAudio(allAvailableAudio)
+	}, interval)
+}
+
+// Initial load of the time and initial audio
+window.$('#currentTime').text(moment().format('h:mma'))
+playAudio(allAvailableAudio)
+
+// Snooze options
+window.$('.btnSnooze').click(function(){
+	snooze(window.$(this).attr('id'))
+})
+
+// Silence the audio without closing the program
+window.$('.btnSilence').click(function(){
+	stopAudio()
+})
+
+// Close the window button
+window.$('#btnClose').click(function(){
+	var window = remote.getCurrentWindow()
+	window.close()
+})
+
+// The current displayed time
+setInterval(function(){
+	window.$('#currentTime').text(moment().format('h:mma'))
+}, 30000)
+</script>
+</html>
