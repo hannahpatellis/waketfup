@@ -84,7 +84,7 @@
 <script type="text/javascript">
 
 // Get all the audio files and put them in an array
-let allAvailableAudio = []
+var allAvailableAudio = []
 fs.readdir(audioFolder, (err, files) => {
 	if (err) throw err
 	files.forEach(file => {
@@ -94,13 +94,23 @@ fs.readdir(audioFolder, (err, files) => {
 	});
 })
 
+// Get a random time between 1 and 16 minutes
+function rndTimeInterval() {
+  return Math.floor(Math.random() * (960000 - 60000)) + 60000;
+}
+
+console.log(rndTimeInterval())
+
 // Functions to handle playing, stopping, and snoozing audio
 function playAudio(allAvailableAudio){
+	// Play a file
 	console.log(allAvailableAudio)
-	let option = allAvailableAudio[Math.floor(Math.random() * allAvailableAudio.length)]
+	var option = allAvailableAudio[Math.floor(Math.random() * allAvailableAudio.length)]
 	console.log('Playing '+option)
+	//clearInterval(myVar);
 }
 function stopAudio(){
+	// Stop the general audio playing
 	console.log('Audio stopped')
 }
 function snooze(time){
